@@ -10,10 +10,10 @@ RUN yum -y update && \
     wget https://es.wordpress.org/latest-es_ES.tar.gz -O /var/www/html/wordpress.tar.gz  && \
     tar -zxvf /var/www/html/wordpress.tar.gz -C /var/www/html/ --strip 1 && \
 # LIMPIAMOS MIERDA 
-    rm -f /var/log/html/wordpress.tar.gz
+    rm -f /var/log/html/wordpress.tar.gz && \
 
 # ELiminamos el index.html 
-    rm -f /var/www/html/index.html 
+    rm -f /var/www/html/index.html && \
     
 # FORZAMOS LOGS 
     ln -sf /dev/stdout /var/log/httpd/access_log && \
