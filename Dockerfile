@@ -1,29 +1,24 @@
-version: '3.3'
-services:
-   mysql:
-     image: mysql:5.7
-     volumes:
-       - db_data:/var/lib/mysql
-     restart: always
-     environment:
-       MYSQL_ROOT_PASSWORD: changeme
-       MYSQL_DATABASE: zabbix
-       MYSQL_USER: zabbix
-       MYSQL_PASSWORD: zabbix_pwd
+FROM centos:8
+LABEL MAINTAINER Nicolas Mantilla Simón nmantilla@reus.cat
 
-   zabbix:
-     depends_on:
-       - mysql
-     image: zabbix/zabbix-server-mysql
-     ports:
-       - "8000:80"
-     restart: always
-     environment:
-       DB_SERVER_HOST: mysql
-       DB_SERVER_PORT: 3306
-       MYSQL_USER: zabbix
-       MYSQL_PASSWORD: zabbix_pwd
+# NMS - Capa 1   
 
-volumes:
-    db_data: {}
-    db_zabbix: {}
+RUN yum -y update && \
+    yum -y install httpd \
+                   php php-common php-mysqlnd php-bcmath php-gd php-json php-mbstring php-xml php-zip \
+                   wget && \
+    wget https://es.wordpress.org/latest-es_ES.tar.gz -O /var/www/html/wordpress.tar.gz  && \
+    tar -zxvf /var/www/html/wordpress.tar.gz -C /var/www/html/ --strip 1 && \
+# LIMPIAMOS MIERDA 
+    rm -f /var/log/html/wordpress.tar.gz
+
+# ELiminamos el index.html 
+    rm -f /var/www/html/index.html 
+    
+# FORZAMOS LOGS 
+    ln -sf /dev/stdout /var/log/httpd/access_log && \
+    ln -sf /dev/stderr /var/log/httpd/error_log && \
+EXPOSE 80 
+
+CMD [ "/usr/sbin/httpd", "-D", "FOREGROUND" ]
+
